@@ -1,11 +1,11 @@
 const express = require("express") //1
-const cors = require ("cors")
+const cors = require ("cors") //8
 const studentsRoutes = require("./services/students") //5
 const server = express() //2
 
 const port = 3001 //3
 
-server.use(cors())
+server.use(cors()) //9
 server.use(express.json()) //7 added for POST purpose of reading 
 //the JSON input, otherwise request body will be undefined
 //MUST GO BEFORE ROUTES!

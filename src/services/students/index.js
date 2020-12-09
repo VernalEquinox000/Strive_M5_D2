@@ -1,8 +1,7 @@
 const express = require("express") //1 3rd party module
 const fs = require("fs") //7 nodejs.org documentation, core module
 const path = require("path") //8 other req core module
-const uniqid = require("uniqid") //24
-
+const uniqid =require("uniqid") //24 npm install uniqid first!
 const router = express.Router() //2
 
 //1.router.get("/")
@@ -60,6 +59,7 @@ router.post("/", (req, res) => { //4
     //(2.1) let's create an id
 
     const newStudent = req.body //20
+    newStudent.ID = uniqid() //25 (n.b. 24 is importing uniquid)
     console.log(newStudent) //21
     //in postman: body>raw>JSON
     studentsArray.push(newStudent) //22
@@ -67,19 +67,59 @@ router.post("/", (req, res) => { //4
 
     //(3) replace old content
 
-    res.send("create users route") //5
+    fs.writeFileSync(studentsFilePath, JSON.stringify(studentsArray)) //26
+
+/* res.send("create users route") //5 */
+    res.status(201).send(newStudent.ID) //27
 })
 
 //4.router.put("/:id")
 router.put("/:id", (req, res) => { //4
-    /* console.log(req) */ //6 
+/* console.log(req) */ //6
+    //BELOW line copied from 3.POST
+    //1.read file
+        const studentsFilePath = path.join(__dirname, "students.json")//11
+    const fileAsBuffer = fs.readFileSync(studentsFilePath); //12
+    const fileAsString = fileAsBuffer.toString() //13bis
+    const studentsArray = JSON.parse(fileAsString)//17
+
+    //2. filter
+    const newStudentsArray = studentsArray.filter(student => student.ID !== req.params.id)//31
+    // ===28
+
+    //3. add new file
+    const modifiedStudent = req.body //29
+    modifiedStudent.ID = req.params.id //30
+    
+    newStudentsArray.push(modifiedStudent) //31
+
+    //4. write back on disk
+        fs.writeFileSync(studentsFilePath, JSON.stringify(newStudentsArray)) //29
+
+
+
     res.send("put users route") //5
 })
 
 //5.router.delete("/:id")
-router.delete("/:id", (req, res) => { //4
-    /* console.log(req) */ //6 
-    res.send("delete users route") //5
+router.delete("/:id", (req, res) => { //4 //name can be :whatever
+/* console.log(req) */ //6
+    //BELOW:lines copied form 3. POST
+    //1. read the file
+    const studentsFilePath = path.join(__dirname, "students.json")//11
+    const fileAsBuffer = fs.readFileSync(studentsFilePath); //12
+    const fileAsString = fileAsBuffer.toString() //13bis
+    const studentsArray = JSON.parse(fileAsString)//17
+
+    //2. filter out the user with specific id
+    const newStudentsArray = studentsArray.filter(student => student.ID !== req.params.id)//28
+    //taken from 18 but with !== instead than === and req.params.id
+
+    //3. save it back from disk
+    fs.writeFileSync(studentsFilePath, JSON.stringify(newStudentsArray)) //29
+    //taken from 26
+/* res.send("delete users route") */ //5
+    res.status(204),send() //30
 })
 
 module.exports = router //3
