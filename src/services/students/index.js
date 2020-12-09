@@ -1,7 +1,7 @@
 const express = require("express") //1 3rd party module
 const fs = require("fs") //7 nodejs.org documentation, core module
 const path = require("path") //8 other req core module
-const uniquid = require("uniqid") //24
+const uniqid = require("uniqid") //24
 
 const router = express.Router() //2
 
