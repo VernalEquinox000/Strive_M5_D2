@@ -59,18 +59,38 @@ router.post("/", (req, res) => { //4
     //(2.1) let's create an id
 
     const newStudent = req.body //20
-    newStudent.ID = uniqid() //25 (n.b. 24 is importing uniquid)
-    console.log(newStudent) //21
-    //in postman: body>raw>JSON
-    studentsArray.push(newStudent) //22
-    console.log(studentsArray) //23
+    console.log(req.body.email)
 
-    //(3) replace old content
+    const sameEmail = studentsArray.filter(student => student.email === req.body.email)
+    console.log(sameEmail)
+    
+   
+    if (sameEmail.length>0) {
+        console.log("this e-mail address is already in use, please add another e-mail!")
+        res.send("this e-mail address is already in use, please add another e-mail!")
+        /* newStudent.email = req.body.email
+        newStudent.ID = uniqid() //25 (n.b. 24 is importing uniquid)
+        console.log(newStudent) //21
+        //in postman: body>raw>JSON
+        studentsArray.push(newStudent) //22
+        console.log(studentsArray) */
+    }
 
-    fs.writeFileSync(studentsFilePath, JSON.stringify(studentsArray)) //26
+    else {
+        newStudent.ID = uniqid() //25 (n.b. 24 is importing uniquid)
+        //console.log(newStudent) //21
+        //in postman: body>raw>JSON
+        studentsArray.push(newStudent) //22
+        //console.log(studentsArray)
+        //23
 
-/* res.send("create users route") //5 */
-    res.status(201).send(newStudent.ID) //27
+        //(3) replace old content
+
+        fs.writeFileSync(studentsFilePath, JSON.stringify(studentsArray)) //26
+
+        /* res.send("create users route") //5 */
+        res.status(201).send(newStudent.ID)
+    } //27
 })
 
 //4.router.put("/:id")
